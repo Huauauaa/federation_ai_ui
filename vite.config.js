@@ -1,7 +1,17 @@
-import { defineConfig } from 'vite'
-import reactRefresh from '@vitejs/plugin-react-refresh'
+import { defineConfig } from 'vite';
+import reactRefresh from '@vitejs/plugin-react-refresh';
+import { getThemeVariables } from 'antd/dist/theme';
 
-// https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [reactRefresh()]
-})
+  plugins: [reactRefresh()],
+  css: {
+    preprocessorOptions: {
+      less: {
+        javascriptEnabled: true,
+        modifyVars: {
+          ...getThemeVariables({}),
+        },
+      },
+    },
+  },
+});

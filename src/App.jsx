@@ -1,25 +1,73 @@
-import React, { useState } from 'react';
-import { DatePicker, message, Alert, Button } from 'antd';
+import React, { useState, useEffect, useReducer, useCallback } from 'react';
+import { ConfigProvider } from 'antd';
+import zhCN from 'antd/lib/locale/zh_CN';
+import { HashRouter as Router, Switch } from 'react-router-dom';
+import UserInfoContext from './contexts/UserInfoContext';
+import { routers, RouteWithSubRoutes } from './router';
 import './assets/styles/app.less';
+import authAPI from './apis/auth.api';
+
+const appReducer = (state, action) => {
+  const { type, payload } = action;
+  switch (type) {
+    case 'SET_USER_INFO': {
+      let isLogin = false;
+      if (payload) {
+        isLogin = true;
+      }
+      return {
+        ...state,
+        isLogin,
+        userInfo: payload,
+      };
+    }
+    default: {
+      return state;
+    }
+  }
+};
 
 function App() {
-  const [date, setDate] = useState(null);
-  const handleChange = (value) => {
-    message.info(
-      `您选择的日期是: ${value ? value.format('YYYY年MM月DD日') : '未选择'}`,
-    );
-    setDate(value);
-  };
+  const [state, dispatch] = useReducer(appReducer, {
+    isLogin: false,
+    userInfo: null,
+  });
+  const { isLogin, userInfo } = state;
+
+  const setUserInfo = useCallback((data) => {
+    dispatch({ type: 'SET_USER_INFO', payload: data });
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await authAPI.fetchUserInfo();
+        setUserInfo(response);
+      } catch (error) {
+        console.error(error);
+      } finally {
+      }
+    })();
+  }, []);
+
   return (
-    <div style={{ width: 400, margin: '100px auto' }}>
-      <DatePicker onChange={handleChange} />
-      <Alert
-        message="当前日期"
-        description={date ? date.format('YYYY年MM月DD日') : '未选择'}
-      />
-      <p>Lorem ipsum dolor sit amet.</p>
-      <Button type="primary">primary</Button>
-    </div>
+    <ConfigProvider locale={zhCN}>
+      <Router>
+        <UserInfoContext.Provider
+          value={{
+            userInfo,
+            isLogin,
+            setUserInfo: (data) => setUserInfo(data),
+          }}
+        >
+          <Switch>
+            {routers.map((route) => (
+              <RouteWithSubRoutes key={route.path} {...route} />
+            ))}
+          </Switch>
+        </UserInfoContext.Provider>
+      </Router>
+    </ConfigProvider>
   );
 }
 

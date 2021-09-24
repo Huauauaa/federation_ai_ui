@@ -8,12 +8,14 @@ module.exports = {
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly',
   },
+  parser: 'babel-eslint',
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
     },
     ecmaVersion: 2018,
     sourceType: 'module',
+    allowImportExportEverywhere: true,
   },
   plugins: ['react-hooks', 'react'],
   rules: {
@@ -28,5 +30,6 @@ module.exports = {
     'react/forbid-prop-types': ['error', { forbid: ['any'] }],
     'arrow-body-style': 'off',
     'arrow-parens': ['warn', 'always'],
+    'react/jsx-no-undef': 'warn',
   },
 };

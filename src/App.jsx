@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useReducer, useCallback } from 'react';
+import React, { useReducer, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { ConfigProvider } from 'antd';
 import zhCN from 'antd/lib/locale/zh_CN';
 import { HashRouter as Router, Switch } from 'react-router-dom';
 import UserInfoContext from './contexts/UserInfoContext';
-import { routers, RouteWithSubRoutes } from './router';
+import { routers, RenderRoutes } from './router';
 import './assets/styles/app.less';
-import authAPI from './apis/auth.api';
 
 const appReducer = (state, action) => {
   const { type, payload } = action;
@@ -27,27 +27,15 @@ const appReducer = (state, action) => {
   }
 };
 
-function App() {
+function App({ isLogin: defaultIsLogin, userInfo: defaultUserInfo }) {
   const [state, dispatch] = useReducer(appReducer, {
-    isLogin: false,
-    userInfo: null,
+    isLogin: defaultIsLogin,
+    userInfo: defaultUserInfo,
   });
   const { isLogin, userInfo } = state;
 
   const setUserInfo = useCallback((data) => {
     dispatch({ type: 'SET_USER_INFO', payload: data });
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const response = await authAPI.fetchUserInfo();
-        setUserInfo(response);
-      } catch (error) {
-        console.error(error);
-      } finally {
-      }
-    })();
   }, []);
 
   return (
@@ -62,7 +50,7 @@ function App() {
         >
           <Switch>
             {routers.map((route) => (
-              <RouteWithSubRoutes key={route.path} {...route} />
+              <RenderRoutes key={route.path} {...route} />
             ))}
           </Switch>
         </UserInfoContext.Provider>
@@ -70,5 +58,14 @@ function App() {
     </ConfigProvider>
   );
 }
+
+App.propTypes = {
+  isLogin: PropTypes.bool.isRequired,
+  userInfo: PropTypes.object,
+};
+
+App.defaultProps = {
+  userInfo: null,
+};
 
 export default App;

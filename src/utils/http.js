@@ -26,10 +26,6 @@ instance.interceptors.response.use(
   },
   (error) => {
     const { response } = error;
-    if (response.status === 401) {
-      window.location.href = `${window.location.origin}/#/sign-in`;
-      return Promise.reject(response.data);
-    }
     return Promise.reject(response.data);
   },
 );

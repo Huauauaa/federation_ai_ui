@@ -8,24 +8,25 @@ const routers = [
   {
     path: '/',
     exact: true,
+    isPublic: false,
     component: HomeView,
   },
   {
     path: '/sign-in',
     exact: true,
-    public: true,
+    isPublic: true,
     component: loadable(() => import('./views/SignIn')),
   },
   {
     path: '/sign-up',
     exact: true,
-    public: true,
+    isPublic: true,
     component: loadable(() => import('./views/SignUp')),
   },
   {
     path: '/forgot-password',
     exact: true,
-    public: true,
+    isPublic: true,
     component: loadable(() => import('./views/ForgotPassword')),
   },
   {
@@ -44,34 +45,26 @@ const routers = [
   },
 ];
 
-function renderRoute(route) {
-  return (
-    <Route
-      path={route.path}
-      render={(props) => {
-        return <route.component {...props} routes={route.routes} />;
-      }}
-    />
-  );
-}
-const RouteWithSubRoutes = (route) => {
-  const { isLogin, userInfo } = useUserInfo();
-  if (isLogin || route.public) {
-    if (route.path === '/') {
-      return renderRoute(route);
-    }
-
-    if (userInfo && route.params) {
-      return <Redirect to="/" />;
-    }
-
-    return renderRoute(route);
+const RenderRoutes = (route) => {
+  const { isLogin } = useUserInfo();
+  const {
+    isPublic,
+    path,
+    location: { pathname },
+  } = route;
+  if (isLogin || isPublic) {
+    return (
+      <Route
+        path={path}
+        render={(props) => {
+          return <route.component {...props} />;
+        }}
+      />
+    );
   }
-  const search =
-    route.location.pathname === '/'
-      ? null
-      : `redirect=${encodeURIComponent(route.location.pathname)}`;
 
+  const search =
+    pathname === '/sign-in' ? null : `redirect=${encodeURIComponent(pathname)}`;
   return (
     <Redirect
       to={{
@@ -81,4 +74,4 @@ const RouteWithSubRoutes = (route) => {
     />
   );
 };
-export { routers, RouteWithSubRoutes };
+export { routers, RenderRoutes };

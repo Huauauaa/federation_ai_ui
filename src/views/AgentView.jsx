@@ -9,8 +9,6 @@ import {
   Badge,
   Tooltip,
   Modal,
-  Pagination,
-  message,
 } from 'antd';
 import {
   DownloadOutlined,
@@ -22,6 +20,7 @@ import agentAPI from '../apis/agent.api';
 import { dateTimeFormatter, dateToTime } from '../utils';
 import { useUserInfo } from '../hooks/useUserInfo';
 import withMainLayout from '../hocs/withMainLayout';
+import TablePagination from '../components/TablePagination';
 
 const rangeConfig = {
   rules: [
@@ -39,7 +38,6 @@ const AgentView = () => {
   const [totalCount, setTotalCount] = useState(0);
   const [searchParams, setSearchParams] = useState({
     page: 1,
-    limit: 3,
     search: '',
     registered_at_after: '',
     registered_at_before: '',
@@ -60,6 +58,7 @@ const AgentView = () => {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     getData();
   }, []);
@@ -184,22 +183,10 @@ const AgentView = () => {
           />
         </Table>
 
-        <Pagination
-          current={searchParams.page}
-          total={totalCount}
-          pageSize={searchParams.limit}
-          defaultPageSize={searchParams.limit}
-          showSizeChanger
-          showQuickJumper
-          showTotal={(total) =>
-            `第
-            ${(searchParams.page - 1) * searchParams.limit + 1} - 
-            ${Math.min(
-              searchParams.page * searchParams.limit,
-              total,
-            )} 条 / 共 ${total} 条`
-          }
-          onChange={changePage}
+        <TablePagination
+          {...searchParams}
+          totalCount={totalCount}
+          changePage={changePage}
         />
       </div>
     </Spin>

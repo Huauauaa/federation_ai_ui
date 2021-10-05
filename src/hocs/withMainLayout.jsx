@@ -1,7 +1,7 @@
-import React, { useCallback } from 'react';
-import { Layout, Menu } from 'antd';
-import { useHistory } from 'react-router-dom';
-import {
+import React, { useCallback, useState } from 'react';
+import { Layout, Menu, Button, Avatar, Dropdown, Tooltip } from 'antd';
+import PropTypes from 'prop-types';
+import Icon, {
   HomeOutlined,
   ClusterOutlined,
   AppstoreAddOutlined,
@@ -11,22 +11,41 @@ import {
   TeamOutlined,
   CalculatorOutlined,
   BookOutlined,
+  MenuUnfoldOutlined,
+  MenuFoldOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
 import '../assets/styles/main-layout.less';
 
 export default function withMainLayout(WrappedComponent) {
   const WithWrapper = (props) => {
-    const history = useHistory();
+    const { history, location } = props;
+    const [collapsed, setCollapsed] = useState(
+      location.state?.collapsed || false,
+    );
     const onMenuClick = useCallback(
       ({ key }) => {
-        history.push(key);
+        console.log(key);
+        history.push({
+          pathname: key,
+          state: {
+            collapsed,
+          },
+        });
       },
-      [history],
+      [collapsed, history],
+    );
+
+    const profileMenu = (
+      <Menu onClick={onMenuClick}>
+        <Menu.Item key="/profile">个人中心</Menu.Item>
+        <Menu.Item key="/sign-out">退出登录</Menu.Item>
+      </Menu>
     );
 
     return (
       <Layout className="main-layout">
-        <Layout.Sider>
+        <Layout.Sider collapsed={collapsed}>
           <Menu
             mode="inline"
             defaultSelectedKeys={[history.location.pathname]}
@@ -62,8 +81,25 @@ export default function withMainLayout(WrappedComponent) {
           </Menu>
         </Layout.Sider>
         <Layout>
-          <Layout.Header style={{ background: 'transparent' }}>
-            Header
+          <Layout.Header
+            style={{
+              background: '#eee',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            <Tooltip title={collapsed ? '展开' : '折叠'}>
+              <Icon
+                component={collapsed ? MenuUnfoldOutlined : MenuFoldOutlined}
+                onClick={() => setCollapsed((val) => !val)}
+              />
+            </Tooltip>
+            <div style={{ marginLeft: 'auto' }}>
+              <Avatar icon={<UserOutlined />} size={48} />
+              <Dropdown overlay={profileMenu}>
+                <Button type="link">Admin</Button>
+              </Dropdown>
+            </div>
           </Layout.Header>
           <Layout.Content className="main-content">
             <WrappedComponent {...props} />
@@ -75,5 +111,11 @@ export default function withMainLayout(WrappedComponent) {
   const wrappedComponentName = WrappedComponent.name || 'Component';
 
   WithWrapper.displayName = `withMainLayout(${wrappedComponentName})`;
+  WithWrapper.propTypes = {
+    location: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
+  };
+
+  WithWrapper.defaultProps = {};
   return WithWrapper;
 }

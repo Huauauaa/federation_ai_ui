@@ -9,127 +9,130 @@ import {
   emailReg,
 } from './regExp';
 
-export function checkPath(rule, value, callback) {
-  if (value === '') {
-    callback('不能为空');
-  } else if (value.length >= 100) {
-    callback('名称应小于100个字符');
-  } else {
-    callback();
+export function checkPath(rule, value) {
+  if (!value) {
+    return Promise.reject(new Error('不能为空'));
   }
+  if (value.length >= 100) {
+    return Promise.reject(new Error('名称应小于100个字符'));
+  }
+  return Promise.resolve();
 }
 
-export function checkName(rule, value, callback) {
-  if (value === '') {
-    callback('不能为空');
-  } else if (value.length >= 25) {
-    callback('名称应小于25个字符');
-  } else {
-    callback();
+export function checkName(rule, value) {
+  if (!value) {
+    return Promise.reject(new Error('不能为空'));
   }
+  if (value.length >= 25) {
+    return Promise.reject(new Error('名称应小于25个字符'));
+  }
+  return Promise.resolve();
 }
 
-export function checkTableName(rule, value, callback) {
-  if (value === '') {
-    callback('不能为空');
-  } else if (tableNameReg.test(value)) {
-    callback();
-  } else {
-    callback('长度[1,128]，英文字母开头，仅允许英文字母、数字及“_”');
+export function checkTableName(rule, value) {
+  if (!value) {
+    return Promise.reject(new Error('不能为空'));
   }
-}
-export function checkProjectName(rule, value, callback) {
-  if (value === '') {
-    callback('不能为空');
-  } else if (projectNameReg.test(value)) {
-    callback();
-  } else {
-    callback('字符串，长度[3,32]，英文字母开头，仅允许英文字母、数字及“_”');
+  if (tableNameReg.test(value)) {
+    return Promise.resolve();
   }
+  return Promise.reject(
+    new Error('长度[1,128]，英文字母开头，仅允许英文字母、数字及“_”'),
+  );
 }
-export function checkAccessId(rule, value, callback) {
-  if (value === '') {
-    callback('不能为空');
-  } else if (accessIdReg.test(value)) {
-    callback();
-  } else {
-    callback('字符串，长度不超过32，英文字母开头，仅允许英文字母、数字及“_”');
+export function checkProjectName(rule, value) {
+  if (!value) {
+    return Promise.reject(new Error('不能为空'));
   }
-}
-export function checkAccessSecret(rule, value, callback) {
-  if (value === '') {
-    callback('不能为空');
-  } else if (accessSecretReg.test(value)) {
-    callback();
-  } else {
-    callback('字符串，长度不超过32');
+  if (projectNameReg.test(value)) {
+    return Promise.resolve();
   }
+  return Promise.reject(
+    new Error('字符串，长度[3,32]，英文字母开头，仅允许英文字母、数字及“_”'),
+  );
 }
-export function checkIP(rule, value, callback) {
-  if (value === '') {
-    callback('不能为空');
-  } else if (portReg.test(value)) {
-    callback();
-  } else {
-    callback('请输入正确的IP格式');
+export function checkAccessId(rule, value) {
+  if (!value) {
+    return Promise.reject(new Error('不能为空'));
   }
+  if (accessIdReg.test(value)) {
+    return Promise.resolve();
+  }
+  return Promise.reject(
+    new Error('字符串，长度不超过32，英文字母开头，仅允许英文字母、数字及“_”'),
+  );
 }
-export function checkPort(rule, value, callback) {
-  if (value === '') {
-    callback('不能为空');
-  } else if (
+export function checkAccessSecret(rule, value) {
+  if (!value) {
+    return Promise.reject(new Error('不能为空'));
+  }
+  if (accessSecretReg.test(value)) {
+    return Promise.resolve();
+  }
+  return Promise.reject(new Error('字符串，长度不超过32'));
+}
+export function checkIP(rule, value) {
+  if (!value) {
+    return Promise.reject(new Error('不能为空'));
+  }
+  if (portReg.test(value)) {
+    return Promise.resolve();
+  }
+  return Promise.reject(new Error('请输入正确的IP格式'));
+}
+export function checkPort(rule, value) {
+  if (!value) {
+    return Promise.reject(new Error('不能为空'));
+  }
+  if (
     Number.isInteger(Number(value)) &&
     Number(value) >= 0 &&
     Number(value) <= 65535
   ) {
-    callback();
-  } else {
-    callback('端口号应为0-65535之间的整数');
+    return Promise.resolve();
   }
+  return Promise.reject(new Error('端口号应为0-65535之间的整数'));
 }
 
-export function checkPassword(rule, value, callback, isRegister = false) {
+export function checkPassword(rule, value, isRegister = false) {
   if (isRegister && !registerPasswordReg.test(value)) {
-    callback(
-      '至少8个字符，至少1个大写字母，1个小写字母和1个数字，其他可以是任意字符',
+    return Promise.reject(
+      new Error(
+        '至少8个字符，至少1个大写字母，1个小写字母和1个数字，其他可以是任意字符',
+      ),
     );
   }
   if (passwordReg.test(value)) {
-    callback();
-  } else {
-    callback('密码长度不能少于8位');
+    return Promise.resolve();
   }
+  return Promise.reject(new Error('密码长度不能少于8位'));
 }
 
-export function checkConfirmPassword(originValue, rule, value, callback) {
+export function checkConfirmPassword(originValue, rule, value) {
   if (originValue === value) {
-    callback();
-  } else {
-    callback('两次填写的密码不一致');
+    return Promise.resolve();
   }
+  return Promise.reject(new Error('两次填写的密码不一致'));
 }
 
-export function checkUsername(rule, value, callback) {
+export function checkUsername(rule, value) {
   if (value.length > 10) {
-    callback('长度不能大于10');
-  } else {
-    callback();
+    return Promise.reject(new Error('长度不能大于10'));
   }
+  return Promise.resolve();
 }
 
-export function checkEmail(rule, value, callback) {
+export function checkEmail(rule, value) {
   if (emailReg.test(value)) {
-    callback();
-  } else {
-    callback('邮箱格式不正确');
+    return Promise.resolve();
   }
+  return Promise.reject(new Error('邮箱格式不正确'));
 }
 
-export function checkIntegerNumber(rule, value, callback) {
+export function checkIntegerNumber(rule, value) {
   const num = Number(value);
   if (!Number.isInteger(num) || num < 1) {
-    callback('列数应为正整数');
-  } else {
-    callback();
+    return Promise.reject(new Error('列数应为正整数'));
   }
+  return Promise.resolve();
 }

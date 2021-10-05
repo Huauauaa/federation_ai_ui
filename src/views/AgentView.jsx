@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   Form,
   DatePicker,
-  Spin,
   Input,
   Button,
   Table,
@@ -16,7 +15,6 @@ import {
   EditOutlined,
   DeleteOutlined,
   MinusOutlined,
-  PlusSquareOutlined,
   SearchOutlined,
 } from '@ant-design/icons';
 import agentAPI from '../apis/agent.api';
@@ -37,8 +35,12 @@ const rangeConfig = {
 const AgentView = () => {
   const { userInfo } = useUserInfo();
   const [loading, setLoading] = useState(false);
-  const [agentModalVisible, setAgentModalVisible] = useState(false);
-  const [agentModalType, setAgentModalType] = useState('edit');
+  const [agentModalConfig, setAgentModalConfig] = useState({
+    visible: false,
+    type: '',
+    defaultValues: {},
+  });
+
   const [data, setData] = useState([]);
   const [total, setTotal] = useState(0);
   const [searchParams, setSearchParams] = useState({
@@ -102,20 +104,13 @@ const AgentView = () => {
             />
           </Form.Item>
           <Form.Item>
-            <Tooltip title="搜索">
-              <Button
-                htmlType="submit"
-                shape="circle"
-                icon={<SearchOutlined />}
-              />
-            </Tooltip>
+            <Button htmlType="submit">搜索</Button>
           </Form.Item>
           <Form.Item style={{ display: 'flex', margin: '0 0 0 auto' }}>
             <Button
               type="primary"
               onClick={() => {
-                setAgentModalType('create');
-                setAgentModalVisible(true);
+                setAgentModalConfig({ type: 'create', visible: true });
               }}
             >
               添加节点
@@ -156,6 +151,7 @@ const AgentView = () => {
             title="注册时间"
             dataIndex="registered_at"
             align="center"
+            width={180}
             render={(val) => <>{dateTimeFormatter(val)}</>}
           />
           <Table.Column
@@ -203,7 +199,13 @@ const AgentView = () => {
                   <Button
                     type="text"
                     icon={<EditOutlined />}
-                    onClick={() => {}}
+                    onClick={() => {
+                      setAgentModalConfig({
+                        type: 'edit',
+                        visible: true,
+                        defaultValues: text,
+                      });
+                    }}
                   />
                 </Tooltip>
                 <Tooltip title="删除">
@@ -248,10 +250,12 @@ const AgentView = () => {
           }}
         />
 
-        {agentModalVisible && (
+        {agentModalConfig.visible && (
           <AgentModal
-            onClose={() => setAgentModalVisible(false)}
-            type={agentModalType}
+            onClose={() =>
+              setAgentModalConfig({ visible: false, defaultValues: {} })
+            }
+            {...agentModalConfig}
           />
         )}
       </div>

@@ -11,7 +11,7 @@ export default () =>
         less: {
           javascriptEnabled: true,
           modifyVars: {
-            ...getThemeVariables({ dark: false, compact: true }),
+            ...getThemeVariables({ dark: false, compact: false }),
             ...themeVariables,
           },
         },

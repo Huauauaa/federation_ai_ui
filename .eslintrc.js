@@ -31,5 +31,6 @@ module.exports = {
     'arrow-body-style': 'off',
     'arrow-parens': ['warn', 'always'],
     'react/jsx-no-undef': 'warn',
+    'no-console': ['warn', { allow: ['warn', 'error'] }],
   },
 };

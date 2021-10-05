@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Form,
   DatePicker,
@@ -9,18 +9,21 @@ import {
   Badge,
   Tooltip,
   Modal,
+  Pagination,
 } from 'antd';
 import {
   DownloadOutlined,
   EditOutlined,
   DeleteOutlined,
   MinusOutlined,
+  PlusSquareOutlined,
+  SearchOutlined,
 } from '@ant-design/icons';
 import agentAPI from '../apis/agent.api';
 import { dateTimeFormatter, dateToTime } from '../utils';
 import { useUserInfo } from '../hooks/useUserInfo';
 import withMainLayout from '../hocs/withMainLayout';
-import TablePagination from '../components/TablePagination';
+import AgentModal from '../components/AgentModal';
 
 const rangeConfig = {
   rules: [
@@ -34,36 +37,42 @@ const rangeConfig = {
 const AgentView = () => {
   const { userInfo } = useUserInfo();
   const [loading, setLoading] = useState(false);
+  const [agentModalVisible, setAgentModalVisible] = useState(false);
+  const [agentModalType, setAgentModalType] = useState('edit');
   const [data, setData] = useState([]);
-  const [totalCount, setTotalCount] = useState(0);
+  const [total, setTotal] = useState(0);
   const [searchParams, setSearchParams] = useState({
     page: 1,
     search: '',
     registered_at_after: '',
     registered_at_before: '',
+    limit: 10,
   });
 
-  const getData = async (params) => {
-    try {
-      setLoading(true);
-      const mergedParams = { ...searchParams, ...params };
-      setSearchParams(mergedParams);
-
-      const { results, count } = await agentAPI.searchAgents(mergedParams);
-      setData(results);
-      setTotalCount(count);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const getData = useCallback(
+    async (params) => {
+      try {
+        setLoading(true);
+        const queryParams = { ...searchParams, ...params };
+        const { results, count } = await agentAPI.searchAgents(queryParams);
+        setSearchParams(queryParams);
+        setData(results);
+        setTotal(count);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [searchParams],
+  );
 
   useEffect(() => {
     getData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const onFinish = ({ searchInput, timeRange }) => {
+  const onSearch = ({ searchInput, timeRange }) => {
     getData({
       page: 1,
       search: searchInput,
@@ -74,16 +83,16 @@ const AgentView = () => {
     });
   };
 
-  const changePage = (current, pageSize) => {
+  const onTableChange = (current, pageSize) => {
     getData({ page: current, limit: pageSize });
   };
 
   return (
-    <Spin spinning={loading}>
-      <div className="table-header">
-        <Form layout="inline" onFinish={onFinish}>
+    <>
+      <div className="table-header" style={{ marginBottom: '20px' }}>
+        <Form layout="inline" onFinish={onSearch}>
           <Form.Item label="节点名称" name="searchInput">
-            <Input type="text" placeholder="搜索" allowClear />
+            <Input type="text" allowClear placeholder="请输入内容" />
           </Form.Item>
           <Form.Item label="注册时间" name="timeRange">
             <DatePicker.RangePicker
@@ -93,36 +102,71 @@ const AgentView = () => {
             />
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit">
-              搜索
+            <Tooltip title="搜索">
+              <Button
+                htmlType="submit"
+                shape="circle"
+                icon={<SearchOutlined />}
+              />
+            </Tooltip>
+          </Form.Item>
+          <Form.Item style={{ display: 'flex', margin: '0 0 0 auto' }}>
+            <Button
+              type="primary"
+              onClick={() => {
+                setAgentModalType('create');
+                setAgentModalVisible(true);
+              }}
+            >
+              添加节点
             </Button>
           </Form.Item>
         </Form>
       </div>
       <div className="table-main">
-        <Table dataSource={data} rowKey="id" pagination={false}>
-          <Table.Column title="节点名称" dataIndex="name" />
-          <Table.Column title="注册人" dataIndex="registrant" />
-          <Table.Column title="IP" dataIndex="ip" />
+        <Table
+          dataSource={data}
+          rowKey="id"
+          scroll={{ x: 1300 }}
+          loading={loading}
+          onChange={onTableChange}
+          pagination={false}
+        >
+          <Table.Column
+            title="节点名称"
+            dataIndex="name"
+            align="center"
+            fixed="left"
+          />
+          <Table.Column title="注册人" dataIndex="registrant" align="center" />
+          <Table.Column title="IP" dataIndex="ip" align="center" />
           <Table.Column
             title="访问级别"
             dataIndex="is_public"
+            align="center"
             render={(isPublic) => <>{isPublic ? '公开' : '私有'}</>}
           />
-          <Table.Column title="操作系统" dataIndex="os" />
-          <Table.Column title="Docker 版本" dataIndex="docker_version" />
+          <Table.Column title="操作系统" dataIndex="os" align="center" />
+          <Table.Column
+            title="Docker 版本"
+            dataIndex="docker_version"
+            align="center"
+          />
           <Table.Column
             title="注册时间"
             dataIndex="registered_at"
+            align="center"
             render={(val) => <>{dateTimeFormatter(val)}</>}
           />
           <Table.Column
             title="节点类型"
             dataIndex="is_cloud"
+            align="center"
             render={(val) => <>{val ? '发起方' : '参与方'}</>}
           />
           <Table.Column
             title="状态"
+            align="center"
             dataIndex="status"
             render={(val) => (
               <>
@@ -136,6 +180,8 @@ const AgentView = () => {
           />
           <Table.Column
             title="操作"
+            fixed="right"
+            align="center"
             render={(text) => (
               <>
                 <Tooltip title="下载">
@@ -183,13 +229,33 @@ const AgentView = () => {
           />
         </Table>
 
-        <TablePagination
-          {...searchParams}
-          totalCount={totalCount}
-          changePage={changePage}
+        <Pagination
+          position={['bottomCenter']}
+          total={total}
+          current={searchParams.page}
+          pageSize={searchParams.limit}
+          showTotal={(_total, range) =>
+            `第 ${range.join(' - ')} 条 / 总共 ${total} 条`
+          }
+          showQuickJumper
+          hideOnSinglePage
+          onChange={onTableChange}
+          style={{
+            position: 'absolute',
+            bottom: '20px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+          }}
         />
+
+        {agentModalVisible && (
+          <AgentModal
+            onClose={() => setAgentModalVisible(false)}
+            type={agentModalType}
+          />
+        )}
       </div>
-    </Spin>
+    </>
   );
 };
 

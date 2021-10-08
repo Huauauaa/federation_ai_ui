@@ -8,4 +8,10 @@ export default {
   downloadAgent({ id, username }) {
     exportData(`${baseURL}/agents/${id}/get_zip/${username}`);
   },
+  createAgent(payload) {
+    return http.post('/agents/', payload);
+  },
+  updateAgent(payload) {
+    return http.patch(`/agents/${payload.id}/`, payload);
+  },
 };

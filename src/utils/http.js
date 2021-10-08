@@ -8,15 +8,15 @@ const instance = axios.create({
 });
 
 instance.interceptors.request.use((config) => {
-  if (
-    ['post', 'patch'].includes(config.method) &&
-    config.url !== '/auth/login/'
-  ) {
-    const body = config.data || {};
-    const data = new FormData();
-    Object.keys(body).forEach((key) => data.append(key, body[key]));
-    config.data = data;
-  }
+  // if (
+  //   ['post', 'patch'].includes(config.method) &&
+  //   config.url !== '/auth/login/'
+  // ) {
+  //   const body = config.data || {};
+  //   const data = new FormData();
+  //   Object.keys(body).forEach((key) => data.append(key, body[key]));
+  //   config.data = data;
+  // }
   return config;
 });
 

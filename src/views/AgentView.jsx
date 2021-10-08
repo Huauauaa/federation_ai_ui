@@ -243,18 +243,21 @@ const AgentView = () => {
           hideOnSinglePage
           onChange={onTableChange}
           style={{
-            position: 'absolute',
-            bottom: '20px',
-            left: '50%',
-            transform: 'translateX(-50%)',
+            display: 'flex',
+            justifyContent: 'center',
+            margin: '20px 0 0',
           }}
         />
 
         {agentModalConfig.visible && (
           <AgentModal
-            onClose={() =>
-              setAgentModalConfig({ visible: false, defaultValues: {} })
-            }
+            onClose={(e, refresh = false) => {
+              setAgentModalConfig({ visible: false, defaultValues: {} });
+              if (refresh) {
+                getData();
+              }
+            }}
+            getData={getData}
             {...agentModalConfig}
           />
         )}

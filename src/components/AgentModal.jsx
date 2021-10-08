@@ -20,20 +20,23 @@ function AgentModal({ onClose, type, defaultValues }) {
       if (type === 'create') {
         await agentAPI.createAgent(values);
       } else {
-        await agentAPI.updateAgent(values);
+        await agentAPI.updateAgent({
+          ...values,
+          id: defaultValues.id,
+          broker: defaultValues.broker,
+        });
       }
       message.success('操作成功');
+      onClose(null, true);
     } catch (error) {
       console.error(error);
       message.error(error.info || '操作失败');
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
     <Modal
-      title="添加节点"
+      title={type === 'create' ? '添加节点' : '编辑节点'}
       visible
       destroyOnClose
       onCancel={onClose}
@@ -48,11 +51,8 @@ function AgentModal({ onClose, type, defaultValues }) {
           labelCol={labelCol}
           style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}
           initialValues={{
-            memory: '',
-            cpu_model_name: '',
-            cpu_MHz: '',
-            cpu_cores: '',
             ...defaultValues,
+            is_cloud: defaultValues.is_cloud ? 1 : 0,
           }}
         >
           <Form.Item

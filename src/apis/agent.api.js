@@ -14,4 +14,7 @@ export default {
   updateAgent(payload) {
     return http.patch(`/agents/${payload.id}/`, payload);
   },
+  deleteAgent(id) {
+    return http.delete(`/agents/${id}/`);
+  },
 };

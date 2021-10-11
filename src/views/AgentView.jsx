@@ -9,13 +9,13 @@ import {
   Tooltip,
   Modal,
   Pagination,
+  message,
 } from 'antd';
 import {
   DownloadOutlined,
   EditOutlined,
   DeleteOutlined,
   MinusOutlined,
-  SearchOutlined,
 } from '@ant-design/icons';
 import agentAPI from '../apis/agent.api';
 import { dateTimeFormatter, dateToTime } from '../utils';
@@ -88,6 +88,20 @@ const AgentView = () => {
   const onTableChange = (current, pageSize) => {
     getData({ page: current, limit: pageSize });
   };
+
+  async function onDeleteAgent(agent) {
+    try {
+      setLoading(true);
+      await agentAPI.deleteAgent(agent.id);
+      await getData();
+      message.success('删除成功');
+    } catch (error) {
+      console.error(error);
+      message.error(error.detail || '删除失败');
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <>
@@ -212,6 +226,9 @@ const AgentView = () => {
                   <Button
                     danger
                     type="text"
+                    disabled={
+                      text.is_public && text.registrant !== userInfo.username
+                    }
                     icon={<DeleteOutlined />}
                     onClick={() => {
                       Modal.confirm({
@@ -220,7 +237,7 @@ const AgentView = () => {
                         okType: 'danger',
                         cancelText: '取消',
                         onOk() {
-                          console.log('删除');
+                          onDeleteAgent(text);
                         },
                       });
                     }}

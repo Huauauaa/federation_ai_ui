@@ -52,7 +52,10 @@ function AgentModal({ onClose, type, defaultValues }) {
           style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}
           initialValues={{
             ...defaultValues,
-            is_cloud: defaultValues.is_cloud ? 1 : 0,
+            is_cloud:
+              defaultValues.is_cloud === undefined
+                ? null
+                : Number(defaultValues.is_cloud),
           }}
         >
           <Form.Item

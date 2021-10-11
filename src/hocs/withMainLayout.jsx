@@ -16,24 +16,35 @@ import Icon, {
   UserOutlined,
 } from '@ant-design/icons';
 import '../assets/styles/main-layout.less';
+import authAPI from '../apis/auth.api';
+import { useUserInfo } from '../hooks/useUserInfo';
 
 export default function withMainLayout(WrappedComponent) {
   const WithWrapper = (props) => {
     const { history, location } = props;
+    const { setUserInfo } = useUserInfo();
     const [collapsed, setCollapsed] = useState(
       location.state?.collapsed || false,
     );
     const onMenuClick = useCallback(
-      ({ key }) => {
-        console.log(key);
-        history.push({
-          pathname: key,
-          state: {
-            collapsed,
-          },
-        });
+      async ({ key }) => {
+        switch (key) {
+          case '/sign-out':
+            await authAPI.signOut();
+            setUserInfo(null);
+            history.push('/sign-in');
+            break;
+
+          default:
+            history.push({
+              pathname: key,
+              state: {
+                collapsed,
+              },
+            });
+        }
       },
-      [collapsed, history],
+      [collapsed, history, setUserInfo],
     );
 
     const profileMenu = (

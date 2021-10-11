@@ -16,4 +16,10 @@ export default {
       password,
     });
   },
+  signOut() {
+    return http.post('/auth/logout/');
+  },
+  // logoutHarbor() {
+  //   return harborHttp.get('/c/log_out', { baseURL: '/harbor' });
+  // },
 };

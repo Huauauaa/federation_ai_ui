@@ -22,4 +22,10 @@ export default {
   // logoutHarbor() {
   //   return harborHttp.get('/c/log_out', { baseURL: '/harbor' });
   // },
+  getAuthCode(payload) {
+    return http.post('/users/send_auth_code/', payload);
+  },
+  resetPassword(payload) {
+    return http.post('/users/reset_password/', payload);
+  },
 };

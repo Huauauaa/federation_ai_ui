@@ -95,6 +95,9 @@ export function checkPort(rule, value) {
 }
 
 export function checkPassword(rule, value, isRegister = false) {
+  if (!value) {
+    return Promise.reject(new Error('不能为空'));
+  }
   if (isRegister && !registerPasswordReg.test(value)) {
     return Promise.reject(
       new Error(

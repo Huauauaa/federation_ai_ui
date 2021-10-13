@@ -36,15 +36,27 @@ function SignIn() {
   };
   return (
     <Spin spinning={loading}>
-      <Form onFinish={onSignIn}>
-        <Form.Item label="账户" name="username" required>
-          <Input />
+      <Form onFinish={onSignIn} style={{ padding: '100px' }}>
+        <Form.Item label="账号" required>
+          <Form.Item name="username" noStyle>
+            <Input />
+          </Form.Item>
+          没有账号?
+          <Button type="link" onClick={() => history.push('/sign-up')}>
+            注册一个
+          </Button>
         </Form.Item>
-        <Form.Item label="密码" name="password" required>
-          <Input type="password" />
+        <Form.Item label="密码" required>
+          <Form.Item name="password" noStyle>
+            <Input type="password" />
+          </Form.Item>
+          忘记密码?
+          <Button type="link" onClick={() => history.push('/forgot-password')}>
+            找回密码
+          </Button>
         </Form.Item>
         <Form.Item>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
             登录
           </Button>
         </Form.Item>

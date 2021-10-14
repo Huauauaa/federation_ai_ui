@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import Icon, {
   HomeOutlined,
   ClusterOutlined,
-  AppstoreAddOutlined,
+  ProjectOutlined,
   AlertOutlined,
   DashboardOutlined,
   HddOutlined,
@@ -74,7 +74,7 @@ export default function withMainLayout(WrappedComponent) {
             <Menu.Item key="/project" icon={<CalculatorOutlined />}>
               算法库
             </Menu.Item>
-            <Menu.Item key="/federation" icon={<AppstoreAddOutlined />}>
+            <Menu.Item key="/federation" icon={<ProjectOutlined />}>
               联邦任务
             </Menu.Item>
             <Menu.Item key="/model" icon={<BookOutlined />}>

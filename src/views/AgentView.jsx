@@ -1,8 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  Form,
-  DatePicker,
-  Input,
   Button,
   Table,
   Badge,
@@ -15,22 +12,13 @@ import {
   DownloadOutlined,
   EditOutlined,
   DeleteOutlined,
-  MinusOutlined,
 } from '@ant-design/icons';
 import agentAPI from '../apis/agent.api';
 import { dateTimeFormatter, dateToTime } from '../utils';
 import { useUserInfo } from '../hooks/useUserInfo';
 import withMainLayout from '../hocs/withMainLayout';
 import AgentModal from '../components/AgentModal';
-
-const rangeConfig = {
-  rules: [
-    {
-      type: 'array',
-      required: true,
-    },
-  ],
-};
+import SearchBar from '../components/SearchBar';
 
 const AgentView = () => {
   const { userInfo } = useUserInfo();
@@ -106,21 +94,9 @@ const AgentView = () => {
   return (
     <>
       <div className="table-header" style={{ marginBottom: '20px' }}>
-        <Form layout="inline" onFinish={onSearch}>
-          <Form.Item label="节点名称" name="searchInput">
-            <Input type="text" allowClear placeholder="请输入内容" />
-          </Form.Item>
-          <Form.Item label="注册时间" name="timeRange">
-            <DatePicker.RangePicker
-              separator={<MinusOutlined />}
-              format="YYYY-MM-DD"
-              {...rangeConfig}
-            />
-          </Form.Item>
-          <Form.Item>
-            <Button htmlType="submit">搜索</Button>
-          </Form.Item>
-          <Form.Item style={{ display: 'flex', margin: '0 0 0 auto' }}>
+        <SearchBar
+          onSearch={onSearch}
+          addButton={
             <Button
               type="primary"
               onClick={() => {
@@ -129,8 +105,8 @@ const AgentView = () => {
             >
               添加节点
             </Button>
-          </Form.Item>
-        </Form>
+          }
+        />
       </div>
       <div className="table-main">
         <Table

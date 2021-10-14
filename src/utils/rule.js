@@ -133,6 +133,9 @@ export function checkEmail(rule, value) {
 }
 
 export function checkIntegerNumber(rule, value) {
+  if (!value) {
+    return Promise.reject(new Error('不能为空'));
+  }
   const num = Number(value);
   if (!Number.isInteger(num) || num < 1) {
     return Promise.reject(new Error('列数应为正整数'));

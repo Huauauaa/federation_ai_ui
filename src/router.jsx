@@ -43,6 +43,27 @@ const routers = [
     label: '数据管理',
     menu: true,
   },
+  {
+    path: '/federation',
+    exact: true,
+    component: loadable(() => import('./views/FederationView')),
+    label: '联邦任务',
+    menu: true,
+  },
+  {
+    path: '/user',
+    exact: true,
+    component: loadable(() => import('./views/UserView')),
+    label: '用户管理',
+    menu: true,
+  },
+  {
+    path: '/profile',
+    exact: true,
+    component: loadable(() => import('./views/ProfileView')),
+    label: '个人信息',
+    menu: true,
+  },
 ];
 
 const RenderRoutes = (route) => {

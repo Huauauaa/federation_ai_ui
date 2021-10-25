@@ -118,6 +118,13 @@ export function checkConfirmPassword(originValue, rule, value) {
   return Promise.reject(new Error('两次填写的密码不一致'));
 }
 
+export function checkNewPassword(pwd, _rule, value) {
+  if (value && pwd === value) {
+    return Promise.reject(new Error('新密码和旧密码不能相同'));
+  }
+  return Promise.resolve();
+}
+
 export function checkUsername(rule, value) {
   if (value.length > 10) {
     return Promise.reject(new Error('长度不能大于10'));

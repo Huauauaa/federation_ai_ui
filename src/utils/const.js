@@ -171,3 +171,9 @@ export const MODEL_TYPE = {
   3: 'vertical_cnn',
   4: 'vertical_lr',
 };
+
+export const ROLES = [
+  { key: 'superuser', label: '平台管理员' },
+  { key: 'staff', label: '项目管理员' },
+  { key: 'normal', label: '项目成员' },
+];

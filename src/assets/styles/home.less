@@ -1,0 +1,23 @@
+.home {
+  height: 100%;
+  position: relative;
+  video {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    filter: blur(1px);
+    -webkit-filter: grayscale(50%);
+    filter: grayscale(50%);
+    z-index: 1;
+  }
+
+  .main {
+    position: absolute;
+    color: #fff;
+    z-index: 2;
+    .ant-statistic-title,
+    .ant-statistic-content {
+      color: #fff;
+    }
+  }
+}
